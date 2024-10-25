@@ -20,6 +20,8 @@ public static class PaletteMapping {
             "C12B_GOR" => "C12B.PAL",
             "C12B_SRL" => "C12A.PAL",
             "C42" => "C42.PAL",
+            "C61A_TLK" => "C61B.PAL",
+            "C61B_BAK" => "C61B.PAL",
             "CAST" => "OPTIONS.PAL",
             "CFRAME" => "OPTIONS.PAL",
             "CHAPTER" => "CHAPTER.PAL",
