@@ -1,6 +1,6 @@
 namespace GameData.Resources.Animation;
 
-using GameData.Resources.Animation.Commands;
+using GameData.Resources.Animation.FrameCommands;
 
 public class AnimatorScene : IResource {
     public AnimatorScene(string id) {

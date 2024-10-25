@@ -1,0 +1,65 @@
+namespace GameData.Resources.Animation.FrameCommands;
+
+#if JSON_SERIALIZE
+using System.Text.Json.Serialization;
+
+[JsonDerivedType(typeof(TagFrame), nameof(TagFrame))]
+[JsonDerivedType(typeof(SelectPaletteSlot), nameof(SelectPaletteSlot))]
+[JsonDerivedType(typeof(LoadPaletteResource), nameof(LoadPaletteResource))]
+[JsonDerivedType(typeof(SelectImageSlot), nameof(SelectImageSlot))]
+[JsonDerivedType(typeof(LoadImageResource), nameof(LoadImageResource))]
+[JsonDerivedType(typeof(LoadScreenResource), nameof(LoadScreenResource))]
+[JsonDerivedType(typeof(DrawImage), nameof(DrawImage))]
+[JsonDerivedType(typeof(StoreScreen), nameof(StoreScreen))]
+[JsonDerivedType(typeof(FadeIn), nameof(FadeIn))]
+[JsonDerivedType(typeof(NextFrame), nameof(NextFrame))]
+[JsonDerivedType(typeof(StoreArea), nameof(StoreArea))]
+[JsonDerivedType(typeof(FadeOut), nameof(FadeOut))]
+[JsonDerivedType(typeof(FillArea), nameof(FillArea))]
+[JsonDerivedType(typeof(LoadFontResource), nameof(LoadFontResource))]
+[JsonDerivedType(typeof(SelectFontSlot), nameof(SelectFontSlot))]
+[JsonDerivedType(typeof(DialogCommand), nameof(DialogCommand))]
+[JsonDerivedType(typeof(SetColors), nameof(SetColors))]
+[JsonDerivedType(typeof(CopyToTargetBuffer), nameof(CopyToTargetBuffer))]
+[JsonDerivedType(typeof(CopyAreaBetweenBuffers), nameof(CopyAreaBetweenBuffers))]
+[JsonDerivedType(typeof(DrawAreaFromBuffer), nameof(DrawAreaFromBuffer))]
+[JsonDerivedType(typeof(SetTargetBuffer), nameof(SetTargetBuffer))]
+[JsonDerivedType(typeof(EndScene), nameof(EndScene))]
+[JsonDerivedType(typeof(PlaySound), nameof(PlaySound))]
+[JsonDerivedType(typeof(LoadSound), nameof(LoadSound))]
+[JsonDerivedType(typeof(LoadSoundResource), nameof(LoadSoundResource))]
+[JsonDerivedType(typeof(SetRange2), nameof(SetRange2))]
+[JsonDerivedType(typeof(SetRange3), nameof(SetRange3))]
+[JsonDerivedType(typeof(UnknownCommandA014), nameof(UnknownCommandA014))]
+[JsonDerivedType(typeof(UnknownCommandA0B5), nameof(UnknownCommandA0B5))]
+[JsonDerivedType(typeof(DrawImageRotated180), nameof(DrawImageRotated180))]
+[JsonDerivedType(typeof(ObsoleteCommand0500), nameof(ObsoleteCommand0500))]
+[JsonDerivedType(typeof(ObsoleteCommand0510), nameof(ObsoleteCommand0510))]
+[JsonDerivedType(typeof(DrawImageFlippedVerticallyScaled), nameof(DrawImageFlippedVerticallyScaled))]
+[JsonDerivedType(typeof(DrawImageRotated180Scaled), nameof(DrawImageRotated180Scaled))]
+[JsonDerivedType(typeof(DrawImageFlippedHorizontally), nameof(DrawImageFlippedHorizontally))]
+[JsonDerivedType(typeof(SetFramesDuration), nameof(SetFramesDuration))]
+[JsonDerivedType(typeof(DisposeTargetBuffer), nameof(DisposeTargetBuffer))]
+[JsonDerivedType(typeof(DisposeCurrentBitmap), nameof(DisposeCurrentBitmap))]
+[JsonDerivedType(typeof(StopSound), nameof(StopSound))]
+[JsonDerivedType(typeof(SetClipArea), nameof(SetClipArea))]
+[JsonDerivedType(typeof(DrawImageScaled), nameof(DrawImageScaled))]
+[JsonDerivedType(typeof(UnknownCommandA094), nameof(UnknownCommandA094))]
+[JsonDerivedType(typeof(GotoFrame), nameof(GotoFrame))]
+[JsonDerivedType(typeof(SetRange1), nameof(SetRange1))]
+[JsonDerivedType(typeof(UnknownCommand2402), nameof(UnknownCommand2402))]
+[JsonDerivedType(typeof(UnknownCommand0400), nameof(UnknownCommand0400))]
+[JsonDerivedType(typeof(DrawImageRotated), nameof(DrawImageRotated))]
+[JsonDerivedType(typeof(DrawImageFlippedHorizontallyScaled), nameof(DrawImageFlippedHorizontallyScaled))]
+[JsonDerivedType(typeof(DrawImageFlippedVertically), nameof(DrawImageFlippedVertically))]
+[JsonDerivedType(typeof(DrawBorder), nameof(DrawBorder))]
+[JsonDerivedType(typeof(UnknownCommandA034), nameof(UnknownCommandA034))]
+[JsonDerivedType(typeof(UnknownCommandC061), nameof(UnknownCommandC061))]
+[JsonDerivedType(typeof(DisposeCurrentPalette), nameof(DisposeCurrentPalette))]
+#endif
+public abstract class FrameCommand {
+    public string Id { get; set; } = "Unknown";
+    public override string ToString() {
+        return Id;
+    }
+}
