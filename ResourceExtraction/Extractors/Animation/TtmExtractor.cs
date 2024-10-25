@@ -1,7 +1,7 @@
 namespace ResourceExtraction.Extractors.Animation;
 
 using GameData.Resources.Animation;
-using GameData.Resources.Animation.Commands;
+using GameData.Resources.Animation.FrameCommands;
 using ResourceExtraction.Compression;
 using ResourceExtraction.Extensions;
 using ResourceExtractor.Compression;
@@ -400,14 +400,14 @@ public class TtmExtractor : ExtractorBase<AnimatorScene> {
 
                 break;
             case 0xA5A7:
-                command = new UnknownCommandA5A7 {
-                    Arg1 = scriptReader.ReadInt16(),
-                    Arg2 = scriptReader.ReadInt16(),
-                    Arg3 = scriptReader.ReadInt16(),
-                    Arg4 = scriptReader.ReadInt16(),
-                    Arg5 = scriptReader.ReadInt16(),
-                    Arg6 = scriptReader.ReadInt16(),
-                    Arg7 = scriptReader.ReadInt16()
+                command = new DrawImageRotated {
+                    X = scriptReader.ReadInt16(),
+                    Y = scriptReader.ReadInt16(),
+                    ImageNumber = scriptReader.ReadInt16(),
+                    ImageSlot = scriptReader.ReadInt16(),
+                    Width = scriptReader.ReadInt16(),
+                    Height = scriptReader.ReadInt16(),
+                    Angle = scriptReader.ReadUInt16()
                 };
 
                 break;

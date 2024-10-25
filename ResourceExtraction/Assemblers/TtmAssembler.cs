@@ -1,7 +1,7 @@
 namespace ResourceExtraction.Assemblers;
 
 using GameData.Resources.Animation;
-using GameData.Resources.Animation.Commands;
+using GameData.Resources.Animation.FrameCommands;
 using ResourceExtractor.Compression;
 using System;
 using System.Collections.Generic;
@@ -301,14 +301,14 @@ public class TtmAssembler {
                         writer.Write((ushort)drawImageRotated180Scaled.Height);
 
                         break;
-                    case UnknownCommandA5A7 unknownCommandA5A7:
-                        writer.Write((ushort)unknownCommandA5A7.Arg1);
-                        writer.Write((ushort)unknownCommandA5A7.Arg2);
-                        writer.Write((ushort)unknownCommandA5A7.Arg3);
-                        writer.Write((ushort)unknownCommandA5A7.Arg4);
-                        writer.Write((ushort)unknownCommandA5A7.Arg5);
-                        writer.Write((ushort)unknownCommandA5A7.Arg6);
-                        writer.Write((ushort)unknownCommandA5A7.Arg7);
+                    case DrawImageRotated unknownCommandA5A7:
+                        writer.Write((ushort)unknownCommandA5A7.X);
+                        writer.Write((ushort)unknownCommandA5A7.Y);
+                        writer.Write((ushort)unknownCommandA5A7.ImageNumber);
+                        writer.Write((ushort)unknownCommandA5A7.ImageSlot);
+                        writer.Write((ushort)unknownCommandA5A7.Width);
+                        writer.Write((ushort)unknownCommandA5A7.Height);
+                        writer.Write((ushort)unknownCommandA5A7.Angle);
 
                         break;
                     case DrawAreaFromBuffer drawBuffer:
