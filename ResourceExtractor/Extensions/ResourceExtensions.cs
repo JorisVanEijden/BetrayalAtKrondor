@@ -26,11 +26,11 @@ public static class ResourceExtensions {
         }
     };
 
-    public static string ToJson(this AnimationResource resource) {
+    public static string ToJson(this AnimatorResource resource) {
         return JsonSerializer.Serialize(resource, JsonOptions);
     }
 
-    public static string ToJson(this AnimatorScene resource) {
+    public static string ToJson(this AnimationResource resource) {
         return JsonSerializer.Serialize(resource, JsonOptions);
     }
 

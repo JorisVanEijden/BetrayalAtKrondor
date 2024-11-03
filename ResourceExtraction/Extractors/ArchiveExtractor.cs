@@ -1,7 +1,7 @@
 namespace ResourceExtraction.Extractors;
 
 using ResourceExtraction.Extensions;
-
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -39,7 +39,7 @@ public class ArchiveExtractor {
     }
 
     public Stream GetResourceStream(string filename) {
-        string filePath = Path.Combine(_resourceFilePath, filename);
+        string filePath = Path.Combine(Path.GetDirectoryName(_resourceFilePath)!, filename);
         if (File.Exists(filePath)) {
             return File.OpenRead(filePath);
         }
@@ -58,5 +58,13 @@ public class ArchiveExtractor {
         resourceFile.ReadExactly(buffer);
 
         return new MemoryStream(buffer);
+    }
+
+    public void ExtractAllResources() {
+        foreach (KeyValuePair<string, (long, uint)> kvp in _dictionary) {
+            var s = GetResourceStream(_resourceFilePath, kvp.Value.Item1, kvp.Value.Item2);
+            using var outStream = File.Create(Path.Combine(Path.GetDirectoryName(_resourceFilePath)!, kvp.Key));
+            s.CopyTo(outStream);
+        }
     }
 }

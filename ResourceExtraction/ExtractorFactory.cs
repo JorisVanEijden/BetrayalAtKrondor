@@ -17,9 +17,9 @@ using System.Collections.Generic;
 public static class ExtractorFactory {
     public static readonly Dictionary<Type, Type> ExtractorMap = new() {
         {
-            typeof(AnimationResource), typeof(AnimationExtractor)
+            typeof(AnimatorResource), typeof(AdsExtractor)
         }, {
-            typeof(AnimatorScene), typeof(TtmExtractor)
+            typeof(AnimationResource), typeof(TtmExtractor)
         }, {
             typeof(UserInterface), typeof(UserInterfaceExtractor)
         }, {

@@ -8,11 +8,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-public class AnimationExtractor : ExtractorBase<AnimationResource> {
-    public override AnimationResource Extract(string id, Stream resourceStream) {
+public class AdsExtractor : ExtractorBase<AnimatorResource> {
+    public override AnimatorResource Extract(string id, Stream resourceStream) {
         using var resourceReader = new BinaryReader(resourceStream, Encoding.GetEncoding(DosCodePage));
-
-        var animation = new AnimationResource(id);
+        var animation = new AnimatorResource(id);
         string tag = ReadTag(resourceReader);
         if (tag != "VER") {
             throw new InvalidDataException($"Expected VER tag, got {tag}");
@@ -49,21 +48,23 @@ public class AnimationExtractor : ExtractorBase<AnimationResource> {
         }
         uint scrSize = resourceReader.ReadUInt32();
         byte[] scriptBytes = DecompressToByteArray(resourceReader, scrSize);
-        var scripts = AdsScriptBuilder.CreateFrom(scriptBytes);
+        Dictionary<int, string> scripts = AdsScriptBuilder.CreateFrom(scriptBytes);
+        Dictionary<int, List<AdsScriptCall>> commandsDebug = AdsScriptBuilder.CreateDebug(scriptBytes);
 
         tag = ReadTag(resourceReader);
         if (tag != "TAG") {
             throw new InvalidDataException($"Expected TAG tag, got {tag}");
         }
-        var tags = ReadTags(resourceReader);
+        Dictionary<int, string> tags = ReadTags(resourceReader);
 
         foreach (int sceneNr in scripts.Keys) {
-            var scene = new AnimationScene {
+            var scene = new AnimatorScript {
                 Id = sceneNr,
                 Tag = tags[sceneNr],
-                Script = scripts[sceneNr]
+                Script = scripts[sceneNr],
+                CommandsDebug = commandsDebug[sceneNr]
             };
-            animation.Scenes.Add(scene);
+            animation.Animations.Add(scene);
         }
 
         return animation;

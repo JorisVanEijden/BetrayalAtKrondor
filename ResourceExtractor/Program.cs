@@ -38,13 +38,16 @@ internal static class Program {
 
         ArchiveExtractor archiveExtractor = new(filePath);
 
+        // Extracts all resource from krondor.001 to separate files in the game directory
+        // archiveExtractor.ExtractAllResources();
+
         Directory.SetCurrentDirectory(@"C:\Users\JvE\AppData\LocalLow\StellarGameStudio\BaK-Again\overrides");
 
         ExtractAnimations(filePath, archiveExtractor);
 
         ExtractAnimatorScripts(filePath, archiveExtractor);
 
-        TestAssembly(filePath, "C51");
+        // TestAssembly(filePath, "C51");
 
 
         // ResourceExtractor.Extractors.ArchiveExtractor.ExtractResourceArchive(filePath);
@@ -115,7 +118,7 @@ internal static class Program {
 
     private static void TestAssembly(string filePath, string name) {
         string destination = Path.Combine(filePath, $"{name}.TTM");
-        var mod = JsonSerializer.Deserialize<AnimatorScene>(File.ReadAllText($"TTM/{name}.json"));
+        var mod = JsonSerializer.Deserialize<AnimationResource>(File.ReadAllText($"TTM/{name}.json"));
         TtmAssembler.Assemble(mod ?? throw new InvalidOperationException(), destination);
     }
 
@@ -125,16 +128,18 @@ internal static class Program {
                  // .Where(f => !f.EndsWith("C51.TTM"))
                 ) {
             using Stream resourceStream = archiveExtractor.GetResourceStream(ttmFile);
-            AnimatorScene ttm = animatorScriptExtractor.Extract(Path.GetFileName(ttmFile), resourceStream);
+            AnimationResource ttm = animatorScriptExtractor.Extract(Path.GetFileName(ttmFile), resourceStream);
             WriteToJsonFile(ttmFile, ttm.Type, ttm.ToJson());
         }
     }
 
     private static void ExtractAnimations(string filePath, ArchiveExtractor archiveExtractor) {
-        var animationExtractor = new AnimationExtractor();
-        foreach (string adsFile in GetFiles(filePath, "*.ads")) {
+        var animationExtractor = new AdsExtractor();
+        foreach (string adsFile in GetFiles(filePath, "*.ads")
+                     // .Where(f => f.EndsWith("C12.ADS"))
+                 ) {
             using Stream resourceStream = archiveExtractor.GetResourceStream(adsFile);
-            AnimationResource anim = animationExtractor.Extract(Path.GetFileName(adsFile), resourceStream);
+            AnimatorResource anim = animationExtractor.Extract(Path.GetFileName(adsFile), resourceStream);
             WriteToJsonFile(adsFile, anim.Type, anim.ToJson());
         }
         // foreach (ushort command in AdsScriptBuilder.SeenCommands) {

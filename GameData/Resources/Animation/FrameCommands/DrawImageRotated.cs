@@ -17,7 +17,6 @@ public class DrawImageRotated : FrameCommand {
         set {
             _angle = value;
             float ax = (short)(-(value >> 4) + 4096) / 15f;
-            Console.WriteLine($"{value:X2} => {ax:N}");
         }
     }
 

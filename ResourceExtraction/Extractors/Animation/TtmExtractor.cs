@@ -10,11 +10,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-public class TtmExtractor : ExtractorBase<AnimatorScene> {
-    public override AnimatorScene Extract(string id, Stream resourceStream) {
+public class TtmExtractor : ExtractorBase<AnimationResource> {
+    public override AnimationResource Extract(string id, Stream resourceStream) {
         using var resourceReader = new BinaryReader(resourceStream, Encoding.GetEncoding(DosCodePage));
 
-        var scene = new AnimatorScene(id);
+        Log($"Extracting {id}");
+
+        var animationResource = new AnimationResource(id);
 
         string tag = ReadTag(resourceReader);
         if (tag != "VER") {
@@ -24,7 +26,7 @@ public class TtmExtractor : ExtractorBase<AnimatorScene> {
         if (resourceReader.ReadUInt16() != 0x0000) {
             throw new InterestingDataException("UInt16 after size is not 0x0000 in VER tag");
         }
-        scene.Version = resourceReader.ReadZeroTerminatedString();
+        animationResource.Version = resourceReader.ReadZeroTerminatedString();
         tag = ReadTag(resourceReader);
         if (tag != "PAG") {
             throw new InvalidDataException($"Expected PAG tag, got {tag}");
@@ -33,7 +35,7 @@ public class TtmExtractor : ExtractorBase<AnimatorScene> {
         if (resourceReader.ReadUInt16() != 0x0000) {
             throw new InterestingDataException("UInt16 after size is not 0x0000 in PAG tag");
         }
-        scene.NumberOfFrames = resourceReader.ReadUInt16();
+        animationResource.NumberOfFrames = resourceReader.ReadUInt16();
         tag = ReadTag(resourceReader);
         if (tag != "TT3") {
             throw new InvalidDataException($"Expected TT3 tag, got {tag}");
@@ -52,8 +54,6 @@ public class TtmExtractor : ExtractorBase<AnimatorScene> {
         var scriptBytes = new byte[scriptStream.Length];
         scriptStream.ReadExactly(scriptBytes);
 
-        File.WriteAllBytes("scriptBytes.bin", scriptBytes);
-
         tag = ReadTag(resourceReader);
         if (tag != "TTI") {
             throw new InvalidDataException($"Expected TTI tag, got {tag}");
@@ -66,35 +66,52 @@ public class TtmExtractor : ExtractorBase<AnimatorScene> {
         if (tag != "TAG") {
             throw new InvalidDataException($"Expected TAG tag, got {tag}");
         }
-        scene.Tags = ReadTags(resourceReader);
-        scene.Frames = DecodeScript(scriptBytes, scene.Tags, id);
 
-        return scene;
+        var tags = ReadTags(resourceReader);
+
+        animationResource.Scenes = DecodeScript(scriptBytes, tags, id);
+
+        return animationResource;
     }
 
-    private static List<List<FrameCommand>> DecodeScript(byte[] scriptBytes, Dictionary<int, string> animatorTags, string id) {
-        var frames = new List<List<FrameCommand>>();
+    private static Dictionary<int, AnimationScene> DecodeScript(byte[] scriptBytes, Dictionary<int, string> animatorTags, string id) {
+        var scenes = new Dictionary<int, AnimationScene>();
         using var scriptStream = new MemoryStream(scriptBytes);
         using var scriptReader = new BinaryReader(scriptStream, Encoding.GetEncoding(DosCodePage));
-        var frameCommands = new List<FrameCommand>();
+        ushort tagNumber = 0;
+        List<FrameCommand> frameList = [];
         while (scriptStream.Position < scriptStream.Length) {
             ushort type = scriptReader.ReadUInt16();
-            if (type == 0x0FF0) {
-                frames.Add(frameCommands);
-                frameCommands = [];
+            // Detect start of scene
+            if (type is 0x1111 or 0x1101) {
+                tagNumber = scriptReader.ReadUInt16();
+                animatorTags.TryGetValue(tagNumber, out string? tagName);
+                scenes[tagNumber] = new AnimationScene {
+                    SceneTag = tagName ?? $"Unknown tag {tagNumber}",
+                    UnknownBool = type == 0x1111
+                };
 
                 continue;
             }
-            var command = GetFrameCommand(animatorTags, type, scriptReader);
+            if (tagNumber == 0) {
+                throw new InvalidOperationException($"can't add commands without scene, first command was {type:X4}");
+            }
+            // Detect end of frame
+            if (type == 0x0FF0) {
+                scenes[tagNumber].Frames.Add(frameList);
+                frameList = [];
+
+                continue;
+            }
+            var command = GetFrameCommand(type, scriptReader);
             Log($"0x{type:X4}: {command} [{id}]");
-            frameCommands.Add(command);
+            frameList.Add(command);
         }
 
-        return frames;
+        return scenes;
     }
 
-    public static FrameCommand GetFrameCommand(Dictionary<int, string> animatorTags, ushort type, BinaryReader scriptReader) {
-        string id;
+    public static FrameCommand GetFrameCommand(ushort type, BinaryReader scriptReader) {
         FrameCommand command;
         switch (type) {
             case 0x0020:
@@ -151,17 +168,6 @@ public class TtmExtractor : ExtractorBase<AnimatorScene> {
             case 0x1071:
                 command = new SelectFontSlot {
                     SlotNumber = scriptReader.ReadInt16()
-                };
-
-                break;
-            case 0x1101:
-            case 0x1111:
-                ushort tagNumber = scriptReader.ReadUInt16();
-                animatorTags.TryGetValue(tagNumber, out string? tagName);
-                command = new TagFrame {
-                    SceneNumber = tagNumber,
-                    SceneTag = tagName,
-                    UnknownBool = type == 0x1111
                 };
 
                 break;

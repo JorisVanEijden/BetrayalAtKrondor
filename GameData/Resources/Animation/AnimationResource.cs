@@ -1,13 +1,14 @@
 namespace GameData.Resources.Animation;
 
-public class AnimationResource : IResource {
+public record AnimationResource : IResource {
     public AnimationResource(string id) {
         Id = id;
     }
 
     public string Version { get; set; }
-    public Dictionary<int, string> ResourceFiles { get; set; }
-    public List<AnimationScene> Scenes { get; set; } = [];
-    public ResourceType Type { get => ResourceType.ADS; }
+    public ushort NumberOfFrames { get; set; }
+    public Dictionary<int, AnimationScene> Scenes { get; set; }
+
+    public ResourceType Type { get => ResourceType.TTM; }
     public string Id { get; }
 }
