@@ -78,34 +78,46 @@ public class TtmExtractor : ExtractorBase<AnimationResource> {
         var scenes = new Dictionary<int, AnimationScene>();
         using var scriptStream = new MemoryStream(scriptBytes);
         using var scriptReader = new BinaryReader(scriptStream, Encoding.GetEncoding(DosCodePage));
-        ushort tagNumber = 0;
-        List<FrameCommand> frameList = [];
+        var frame = new Frame();
+        var scene = new AnimationScene();
+        var sceneTagNumber = 0;
         while (scriptStream.Position < scriptStream.Length) {
             ushort type = scriptReader.ReadUInt16();
-            // Detect start of scene
-            if (type is 0x1111 or 0x1101) {
-                tagNumber = scriptReader.ReadUInt16();
+
+            // Keep track of tags
+            if (type is 0x1101 or 0x1111) {
+                var tagNumber = scriptReader.ReadUInt16();
                 animatorTags.TryGetValue(tagNumber, out string? tagName);
-                scenes[tagNumber] = new AnimationScene {
-                    SceneTag = tagName ?? $"Unknown tag {tagNumber}",
-                    UnknownBool = type == 0x1111
-                };
+                SceneTag tag = new SceneTag(tagNumber, tagName ?? $"Unknown tag {tagNumber}", type == 0x1111);
+                if (sceneTagNumber == 0) {
+                    sceneTagNumber = tag.Number;
+                    scene.SceneTag = tag;
+                }
 
                 continue;
             }
-            if (tagNumber == 0) {
-                throw new InvalidOperationException($"can't add commands without scene, first command was {type:X4}");
-            }
-            // Detect end of frame
-            if (type == 0x0FF0) {
-                scenes[tagNumber].Frames.Add(frameList);
-                frameList = [];
+
+            // Detect end of frame or scene
+            if (type is 0x0FF0 or 0x110) {
+                if (frame.Commands.Count > 0) {
+                    scene.Frames.Add(frame);
+                    frame = new Frame();
+                }
+                // Detect end of scene
+                if (type == 0x0110) {
+                    scenes.Add(sceneTagNumber, scene);
+                    sceneTagNumber = 0;
+                    scene = new AnimationScene();
+                }
 
                 continue;
             }
+
+
+
             var command = GetFrameCommand(type, scriptReader);
             Log($"0x{type:X4}: {command} [{id}]");
-            frameList.Add(command);
+            frame.Commands.Add(command);
         }
 
         return scenes;

@@ -6,6 +6,7 @@ using ResourceExtraction.Extractors;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 public class AdsExtractor : ExtractorBase<AnimatorResource> {
@@ -48,8 +49,11 @@ public class AdsExtractor : ExtractorBase<AnimatorResource> {
         }
         uint scrSize = resourceReader.ReadUInt32();
         byte[] scriptBytes = DecompressToByteArray(resourceReader, scrSize);
+        File.WriteAllBytes($"{id}.bytes", scriptBytes);
         Dictionary<int, string> scripts = AdsScriptBuilder.CreateFrom(scriptBytes);
-        Dictionary<int, List<AdsScriptCall>> commandsDebug = AdsScriptBuilder.CreateDebug(scriptBytes);
+        if (Debug) {
+            Dictionary<int, List<AdsScriptCall>> commandsDebug = AdsScriptBuilder.CreateDebug(scriptBytes);
+        }
 
         tag = ReadTag(resourceReader);
         if (tag != "TAG") {
@@ -62,7 +66,7 @@ public class AdsExtractor : ExtractorBase<AnimatorResource> {
                 Id = sceneNr,
                 Tag = tags[sceneNr],
                 Script = scripts[sceneNr],
-                CommandsDebug = commandsDebug[sceneNr]
+                // CommandsDebug = commandsDebug[sceneNr]
             };
             animation.Animations.Add(scene);
         }

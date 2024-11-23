@@ -4,7 +4,6 @@ using GameData.Resources.Animation;
 using GameData.Resources.Animation.FrameCommands;
 using ResourceExtractor.Compression;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -84,8 +83,8 @@ public class TtmAssembler {
         using var writer = new BinaryWriter(memoryStream, Encoding.UTF8, true);
 
         foreach (AnimationScene scene in animationResource.Scenes.Values) {
-            foreach (var frameList in scene.Frames) {
-                foreach (var command in frameList) {
+            foreach (var frame in scene.Frames) {
+                foreach (var command in frame.Commands) {
                     var id = ushort.Parse(command.Id, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
                     writer.Write(id); // Write command ID
 
@@ -118,7 +117,7 @@ public class TtmAssembler {
 
                             break;
                         case TagFrame tagFrame:
-                            writer.Write((ushort)tagFrame.SceneNumber);
+                            writer.Write((ushort)tagFrame.TagNumber);
 
                             break;
                         case SetTargetBuffer setActiveBuffer:
