@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReverseBak Project</title>
+    <style>
+        :root {
+            --primary-color: #2c1810;
+            --accent-color: #8b0000;
+            --text-color: #d4c4a8;
+            --link-color: #ffd700;
+            --header-font: 'Cinzel', Georgia, serif;
+        }
+        
+        /* Keep all existing styles exactly as they are */
+        body {
+            font-family: 'Crimson Text', Georgia, serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: var(--primary-color) url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.gog-statics.com/d0f33c3756c72c86b7d9443405168646d49a5bf2a0e3d1c00d180aaf19bec2ce.jpg') center/cover;
+            padding: 100px 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid var(--accent-color);
+            position: relative;
+        }
+
+        .hero::before,
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            top: 0;
+            background: url('https://openclipart.org/image/800px/292860') no-repeat;
+            background-size: contain;
+            opacity: 0.6;
+        }
+
+        .hero::before {
+            left: 0;
+        }
+
+        .hero::after {
+            right: 0;
+            transform: scaleX(-1);
+        }
+
+        h1, h2, h3 {
+            font-family: var(--header-font);
+            color: var(--link-color);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-top: 24px;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin: 0;
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #fff;
+            text-shadow: 0 0 5px var(--link-color);
+        }
+
+        .section {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        ul li:before {
+            content: "►";
+            color: var(--accent-color);
+            margin-right: 10px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background: rgba(44, 24, 16, 0.8);
+            padding: 15px;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        /* Add new gallery styles */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .gallery img {
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="hero">
+        <h1>ReverseBak Project</h1>
+        <p>Rediscovering the magic of Betrayal at Krondor</p>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>About the Project</h2>
+            <p>ReverseBak is an ambitious endeavor to reverse engineer the classic MS-DOS game Betrayal at Krondor. Our goal is to understand the game's data formats and mechanics to eventually create a highly moddable version in Unity.</p>
+        </div>
+
+        <div class="section">
+            <h2>Current Components</h2>
+            
+            <h3>ResourceExtractor</h3>
+            <ul>
+                <li>Converts original game data files to .NET objects</li>
+                <li>Exports data as JSON/CSV for analysis</li>
+                <li>Development tool with command line interface</li>
+            </ul>
+
+            <h3>BetrayalAtKrondor</h3>
+            <ul>
+                <li>Works with <a href="https://github.com/OpenRakis/Spice86">Spice86</a> DOS emulator</li>
+                <li>Provides C# overrides for original game functions</li>
+                <li>Enables debugging, logging and investigation of game behavior</li>
+                <li>Replaces low-level DOS file handling for better control</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Getting Started</h2>
+            <h3>Prerequisites</h3>
+            <ul>
+                <li>.NET 9 SDK</li>
+                <li>Clone the repository</li>
+                <li>IDE (Rider recommended)</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Tools We Use</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3>DOSBox-X</h3>
+                    <a href="https://dosbox-x.com/">Learn More</a>
+                </div>
+                <div class="tool-card">
+                    <h3>Ghidra</h3>
+                    <a href="https://ghidra-sre.org/">Learn More</a>
+                </div>
+                <div class="tool-card">
+                    <h3>IDA Freeware</h3>
+                    <a href="https://www.scummvm.org/news/20180331/">Learn More</a>
+                </div>
+                <div class="tool-card">
+                    <h3>HxD</h3>
+                    <a href="https://mh-nexus.de/en/hxd/">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
