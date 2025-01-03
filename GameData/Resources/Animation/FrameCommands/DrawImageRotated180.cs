@@ -1,11 +1,6 @@
 namespace GameData.Resources.Animation.FrameCommands;
 
-public class DrawImageRotated180 : FrameCommand {
-    public int X { get; set; }
-    public int Y { get; set; }
-    public int ImageNumber { get; set; }
-    public int ImageSlot { get; set; }
-
+public class DrawImageRotated180 : DrawImageBase {
     public override string ToString() {
         return $"{nameof(DrawImageRotated180)}({X}, {Y}, {ImageNumber}, {ImageSlot});";
     }

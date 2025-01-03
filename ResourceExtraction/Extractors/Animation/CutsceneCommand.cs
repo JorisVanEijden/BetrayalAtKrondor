@@ -11,31 +11,35 @@ public class CutsceneCommand {
 
     public override string ToString() {
         switch (Token) {
-            case 0x1510: // END_IF
-                return "END IF";
-            case 0x1500: // ELSE
-                return "ELSE";
-            case 0x1520: // END_IF
-                return "END IF";
-            case 0x1030: // IF_SCENE_NOT_PLAYED
+            // Conditions
+            case 0x1030:
                 return $"IF NOT PLAYED scene_{Arguments[1]}";
-            case 0x1420: // AND
-                return "AND"; // The AND will be handled specially in ToHumanReadableScript
-            case 0x1330: // IF_SCENE_NOT_PLAYED
+            case 0x1330:
                 return $"IF NOT PLAYED scene_{Arguments[1]}";
-            case 0x1350: // IF_SCENE_PLAYED
+            case 0x1350:
                 return $"IF PLAYED scene_{Arguments[1]}";
-            case 0x13A0: // IF_CHAPTER_LESS_EQUAL
+            case 0x13A0:
                 return $"IF CHAPTER <= {Arguments[0]}";
-            case 0x13B0: // IF_CHAPTER_GREATER_EQUAL
+            case 0x13B0:
                 return $"IF CHAPTER >= {Arguments[0]}";
-            case 0x2000: // CONTINUE_SCENE
+            // Operators
+            case 0x1420:
+                return "AND";
+            // End conditions
+            case 0x1510:
+                return "END IF";
+            case 0x1500:
+                return "ELSE";
+            case 0x1520:
+                return "END IF";
+            // Commands
+            case 0x2000:
                 return $"CONTINUE scene_{Arguments[1]}";
-            case 0x2005: // START_SCENE
+            case 0x2005:
                 return $"START scene_{Arguments[1]}";
-            case 0x2010: // STOP_SCENE
+            case 0x2010:
                 return $"STOP scene_{Arguments[1]}";
-            case 0xFFFF: // END_OF_SCRIPT
+            case 0xFFFF:
                 return "END OF SCRIPT";
             default:
                 return $"UNKNOWN_COMMAND 0x{Token:X4}, {string.Join(", ", Arguments)}";

@@ -49,7 +49,7 @@ public class AdsExtractor : ExtractorBase<AnimatorResource> {
         }
         uint scrSize = resourceReader.ReadUInt32();
         byte[] scriptBytes = DecompressToByteArray(resourceReader, scrSize);
-        File.WriteAllBytes($"{id}.bytes", scriptBytes);
+        // File.WriteAllBytes($"{id}.bytes", scriptBytes);
         Dictionary<int, string> scripts = AdsScriptBuilder.CreateFrom(scriptBytes);
         if (Debug) {
             Dictionary<int, List<AdsScriptCall>> commandsDebug = AdsScriptBuilder.CreateDebug(scriptBytes);

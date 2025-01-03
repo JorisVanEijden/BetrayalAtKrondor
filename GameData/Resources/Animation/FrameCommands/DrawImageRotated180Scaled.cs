@@ -1,10 +1,6 @@
 namespace GameData.Resources.Animation.FrameCommands;
 
-public class DrawImageRotated180Scaled : FrameCommand {
-    public int X { get; set; }
-    public int Y { get; set; }
-    public int ImageNumber { get; set; }
-    public int ImageSlot { get; set; }
+public class DrawImageRotated180Scaled : DrawImageBase {
     public int Width { get; set; }
     public int Height { get; set; }
 

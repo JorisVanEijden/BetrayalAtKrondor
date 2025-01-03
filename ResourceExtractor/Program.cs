@@ -10,6 +10,7 @@ using GameData.Resources.Label;
 using GameData.Resources.Location;
 using GameData.Resources.Menu;
 using GameData.Resources.Object;
+using GameData.Resources.Palette;
 using GameData.Resources.Spells;
 using ResourceExtraction.Assemblers;
 using ResourceExtraction.Extractors;
@@ -49,7 +50,6 @@ internal static class Program {
 
         // TestAssembly(filePath, "C51");
 
-
         // ResourceExtractor.Extractors.ArchiveExtractor.ExtractResourceArchive(filePath);
         FontExtractor.Extract(Path.Combine(filePath, "game.fnt"));
         // ExtractScreen(Path.Combine(filePath, "Z01L.SCX"));
@@ -59,6 +59,7 @@ internal static class Program {
         ExtractAllBmx(filePath, archiveExtractor);
 
         ExtractAllPalettes(filePath, archiveExtractor);
+        ExtractAllRemappings(filePath, archiveExtractor);
 
         // var screen = ExtractScreen(Path.Combine(filePath, "PUZZLE.SCX"));
         // var image = new BmImage{BitMapData = screen.BitMapData, Width = 320, Height = 200};
@@ -116,6 +117,15 @@ internal static class Program {
         }
     }
 
+    private static void ExtractAllRemappings(string filePath, ArchiveExtractor archiveExtractor) {
+        var remapExtractor = new RemapExtractor();
+        foreach (string paletteFile in GetFiles(filePath, "*.RMP")) {
+            using var resourceStream = archiveExtractor.GetResourceStream(paletteFile);
+            var remapResource = remapExtractor.Extract(Path.GetFileName(paletteFile), resourceStream);
+            WriteToJsonFile(paletteFile, ResourceType.RMP, remapResource.ToJson());
+        }
+    }
+
     private static void TestAssembly(string filePath, string name) {
         string destination = Path.Combine(filePath, $"{name}.TTM");
         var mod = JsonSerializer.Deserialize<AnimationResource>(File.ReadAllText($"TTM/{name}.json"));
@@ -136,8 +146,8 @@ internal static class Program {
     private static void ExtractAnimations(string filePath, ArchiveExtractor archiveExtractor) {
         var animationExtractor = new AdsExtractor();
         foreach (string adsFile in GetFiles(filePath, "*.ads")
-                     // .Where(f => f.EndsWith("C12.ADS"))
-                 ) {
+                 // .Where(f => f.EndsWith("C12.ADS"))
+                ) {
             using Stream resourceStream = archiveExtractor.GetResourceStream(adsFile);
             AnimatorResource anim = animationExtractor.Extract(Path.GetFileName(adsFile), resourceStream);
             WriteToJsonFile(adsFile, anim.Type, anim.ToJson());
@@ -185,6 +195,7 @@ internal static class Program {
             ImageSet imageSet = bitmapExtractor.Extract(Path.GetFileName(bmxFile), resourceStream);
             var imageName = $"{Path.GetFileNameWithoutExtension(bmxFile)}";
             Color[] colors = GetColorsFromPalette(filePath, archiveExtractor, imageName, paletteExtractor);
+            colors = ApplyRemapping("Z12.RMP", colors, 2);
             // For multiple images we create a directory and extract each image
             var path = ResourceType.BMX.ToString();
             string resourceDirectory = Path.Combine(path, imageName);
@@ -195,6 +206,24 @@ internal static class Program {
                 WriteToPngFile(i.ToString(), resourceDirectory, bmImage.ToBitmap(colors));
             }
         }
+    }
+
+    private static Color[] ApplyRemapping(string name, Color[] colors, int id = 0) {
+        var remap = ReadFromJsonFile<RemapResource>(name);
+        var remappedColors = new Color[colors.Length];
+
+        if (!remap.Mappings.TryGetValue(id, out Dictionary<byte, byte>? mapping))
+            return colors;
+
+        for (var i = 0; i < colors.Length; i++) {
+            if (mapping.TryGetValue((byte)i, out byte index)) {
+                remappedColors[i] = colors[index];
+            } else {
+                remappedColors[i] = colors[i];
+            }
+        }
+
+        return remappedColors;
     }
 
     private static Color[] GetColorsFromPalette(string filePath, ArchiveExtractor archiveExtractor, string imageName, PaletteExtractor paletteExtractor) {
@@ -307,7 +336,7 @@ internal static class Program {
         return s;
     }
 
-    private static IEnumerable<string> GetFiles(string filePath, string searchPattern) {
+    private static string[] GetFiles(string filePath, string searchPattern) {
         return Directory.GetFileSystemEntries(filePath, searchPattern, new EnumerationOptions {
             MatchCasing = MatchCasing.CaseInsensitive
         });
@@ -320,6 +349,18 @@ internal static class Program {
             Directory.CreateDirectory(resourceDirectory);
         }
         File.WriteAllText(Path.Combine(resourceDirectory, Path.GetFileNameWithoutExtension(fileName) + ".json"), json);
+    }
+
+    private static T ReadFromJsonFile<T>(string fileName) {
+        string resourceDirectory = Path.GetExtension(fileName)[1..].ToUpper();
+        string json = File.ReadAllText(Path.Combine(resourceDirectory, Path.GetFileNameWithoutExtension(fileName) + ".json"));
+        var obj = JsonSerializer.Deserialize<T>(json);
+
+        if (obj == null) {
+            throw new InvalidOperationException($"Failed to deserialize {fileName}");
+        }
+
+        return obj;
     }
 
     private static void WriteToCsvFile(string fileName, ResourceType resourceType, string csv) {

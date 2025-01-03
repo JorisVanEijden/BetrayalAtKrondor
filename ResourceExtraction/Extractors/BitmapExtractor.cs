@@ -107,7 +107,7 @@ public class BitmapExtractor : ExtractorBase<ImageSet> {
         for (var i = 0; i < nrOfImages; i++) {
             images[i] = new BmImage($"{name}[{i}]") {
                 Size = resourceReader.ReadUInt16(),
-                Flags = resourceReader.ReadUInt16(),
+                Flags = (ImageFlags)resourceReader.ReadUInt16(),
                 Width = resourceReader.ReadUInt16(),
                 Height = resourceReader.ReadUInt16()
             };
@@ -156,9 +156,9 @@ public class BitmapExtractor : ExtractorBase<ImageSet> {
         // all data should be read at this point
         for (var i = 0; i < nrOfImages; i++) {
             BmImage image = images[i];
-            Log($"Image: {i} size: {image.Size} bytes, flags: {image.Flags:X4}, width: {image.Width}, height: {image.Height}, expectedSize: {image.Height * image.Width} bytes.");
+            Log($"Image: {i} size: {image.Size} bytes, flags: {(short)image.Flags:X4}, width: {image.Width}, height: {image.Height}, expectedSize: {image.Height * image.Width} bytes.");
 
-            if ((image.Flags & 0x80) == 0) {
+            if (!image.Flags.HasFlag(ImageFlags.Compressed)) {
                 Log($"No extra compression for image {i}");
                 image.BitMapData = new byte[image.Size];
                 imageStream.ReadExactly(image.BitMapData);

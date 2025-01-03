@@ -1,11 +1,6 @@
 namespace GameData.Resources.Animation.FrameCommands;
 
-public class DrawImageFlippedVertically : FrameCommand {
-    public int X { get; set; }
-    public int Y { get; set; }
-    public int ImageNumber { get; set; }
-    public int ImageSlot { get; set; }
-
+public class DrawImageFlippedVertically : DrawImageBase {
     public override string ToString() {
         return $"{nameof(DrawImageFlippedVertically)}({X}, {Y}, {ImageNumber}, {ImageSlot});";
     }

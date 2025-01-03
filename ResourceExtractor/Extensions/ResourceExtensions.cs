@@ -78,6 +78,10 @@ public static class ResourceExtensions {
         return JsonSerializer.Serialize(resource, JsonOptions);
     }
 
+    public static string ToJson(this RemapResource resource) {
+        return JsonSerializer.Serialize(resource, JsonOptions);
+    }
+
     public static string ToJson(this KeywordList resource) {
         return JsonSerializer.Serialize(resource, JsonOptions);
     }
@@ -126,7 +130,7 @@ public static class ResourceExtensions {
         }
         var bitmap = new Bitmap(image.Width, image.Height);
 
-        if ((image.Flags & 0x20) != 0) {
+        if (image.Flags.HasFlag(ImageFlags.ReversedRowColumn)) {
             int index = 0;
             for (int x = 0; x < image.Width; x++) {
                 for (int y = 0; y < image.Height; y++) {
